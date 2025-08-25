@@ -1,34 +1,35 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
+import { useAtom } from "jotai";
+import { useLocalStorage } from "usehooks-ts";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
-} from "@/components/ui/resizable"
-import { Separator } from "@/components/ui/separator"
+} from "@/components/ui/resizable";
+import { Separator } from "@/components/ui/separator";
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
-} from "@/components/ui/tabs"
-import { TooltipProvider } from "@/components/ui/tooltip"
-import { AccountSwitcher } from "@/app/mail/components/account-switcher"
-import { ThreadDisplay } from "./thread-display"
-import { ThreadList } from "./thread-list"
-import { useLocalStorage } from "usehooks-ts"
-import SideBar from "./sidebar"
-import SearchBar, { isSearchingAtom } from "./search-bar"
-import { useAtom } from "jotai"
-import AskAI from "./ask-ai"
+} from "@/components/ui/tabs";
+import { TooltipProvider } from "@/components/ui/tooltip";
+
+import { AccountSwitcher } from "@/app/mail/components/account-switcher";
+import { ThreadDisplay } from "./thread-display";
+import { ThreadList } from "./thread-list";
+import SideBar from "./sidebar";
+import SearchBar from "./search-bar";
+import AskAI from "./ask-ai";
 
 interface MailProps {
-  defaultLayout: number[] | undefined
-  defaultCollapsed?: boolean
-  navCollapsedSize: number
+  defaultLayout?: number[];
+  defaultCollapsed?: boolean;
+  navCollapsedSize: number;
 }
 
 export function Mail({
@@ -36,9 +37,8 @@ export function Mail({
   defaultCollapsed = false,
   navCollapsedSize,
 }: MailProps) {
-  const [done, setDone] = useLocalStorage('normalhuman-done', false)
-  const [isCollapsed, setIsCollapsed] = React.useState(defaultCollapsed)
-
+  const [done, setDone] = useLocalStorage("normalhuman-done", false);
+  const [isCollapsed, setIsCollapsed] = React.useState(defaultCollapsed);
 
   return (
     <TooltipProvider delayDuration={0}>
@@ -47,34 +47,34 @@ export function Mail({
         onLayout={(sizes: number[]) => {
           document.cookie = `react-resizable-panels:layout:mail=${JSON.stringify(
             sizes
-          )}`
+          )}`;
         }}
-        className="items-stretch h-full min-h-screen"
+        className="h-full min-h-screen items-stretch"
       >
+        {/* Sidebar Panel */}
         <ResizablePanel
           defaultSize={defaultLayout[0]}
           collapsedSize={navCollapsedSize}
-          collapsible={true}
+          collapsible
           minSize={15}
           maxSize={40}
           onCollapse={() => {
-            setIsCollapsed(true)
+            setIsCollapsed(true);
             document.cookie = `react-resizable-panels:collapsed=${JSON.stringify(
               true
-            )}`
+            )}`;
           }}
           onResize={() => {
-            setIsCollapsed(false)
+            setIsCollapsed(false);
             document.cookie = `react-resizable-panels:collapsed=${JSON.stringify(
               false
-            )}`
+            )}`;
           }}
           className={cn(
-            isCollapsed &&
-            "min-w-[50px] transition-all duration-300 ease-in-out"
+            isCollapsed && "min-w-[50px] transition-all duration-300 ease-in-out"
           )}
         >
-          <div className="flex flex-col h-full flex-1">
+          <div className="flex h-full flex-1 flex-col">
             <div
               className={cn(
                 "flex h-[52px] items-center justify-center",
@@ -85,20 +85,20 @@ export function Mail({
             </div>
             <Separator />
             <SideBar isCollapsed={isCollapsed} />
-            <div className="flex-1"></div>
+            <div className="flex-1" />
             <AskAI isCollapsed={isCollapsed} />
           </div>
-
         </ResizablePanel>
+
         <ResizableHandle withHandle />
+
+        {/* Thread List Panel */}
         <ResizablePanel defaultSize={defaultLayout[1]} minSize={30}>
-          <Tabs defaultValue="inbox" value={done ? 'done' : 'inbox'} onValueChange={tab => {
-            if (tab === 'done') {
-              setDone(true)
-            } else {
-              setDone(false)
-            }
-          }}>
+          <Tabs
+            defaultValue="inbox"
+            value={done ? "done" : "inbox"}
+            onValueChange={(tab) => setDone(tab === "done")}
+          >
             <div className="flex items-center px-4 py-2">
               <h1 className="text-xl font-bold">Inbox</h1>
               <TabsList className="ml-auto">
@@ -116,8 +116,10 @@ export function Mail({
                 </TabsTrigger>
               </TabsList>
             </div>
+
             <Separator />
             <SearchBar />
+
             <TabsContent value="inbox" className="m-0">
               <ThreadList />
             </TabsContent>
@@ -126,11 +128,14 @@ export function Mail({
             </TabsContent>
           </Tabs>
         </ResizablePanel>
+
         <ResizableHandle withHandle />
+
+        {/* Thread Display Panel */}
         <ResizablePanel defaultSize={defaultLayout[2]} minSize={30}>
           <ThreadDisplay />
         </ResizablePanel>
       </ResizablePanelGroup>
     </TooltipProvider>
-  )
+  );
 }

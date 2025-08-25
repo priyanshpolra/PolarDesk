@@ -10,7 +10,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import Link from "next/link"
+
 import { useLocalStorage } from "usehooks-ts"
 
 interface NavProps {
@@ -70,19 +70,7 @@ export function Nav({ links, isCollapsed }: NavProps) {
                 "justify-start cursor-pointer"
               )}
             >
-              <link.icon className="w-4 h-4 mr-2" />
-              {link.title}
-              {link.label && (
-                <span
-                  className={cn(
-                    "ml-auto",
-                    link.variant === "default" &&
-                    "text-background dark:text-white"
-                  )}
-                >
-                  {link.label}
-                </span>
-              )}
+              
             </span>
           )
         )}
